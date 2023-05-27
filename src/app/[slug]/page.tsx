@@ -10,6 +10,14 @@ const getArticle = async (slug: string) => {
   return article;
 };
 
+export const generateStaticParams = async () => {
+  const articles = await prisma.article.findMany();
+
+  return articles.map((article) => ({
+    slug: article.slug,
+  }));
+};
+
 export default async function Detail({ params }: { params: { slug: string } }) {
   const article = await getArticle(params.slug);
 
