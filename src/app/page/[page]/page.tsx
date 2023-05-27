@@ -1,7 +1,7 @@
 import { Pagination } from "@/app/_components/Pagination";
-import Link from "next/link";
 import { getArticles } from "@/services/getArticles";
 import { getArticlesCount } from "@/services/getArticleCount";
+import { ArticleCard } from "@/app/_components/ArticleCard";
 
 export const generateStaticParams = async () => {
   const count = await getArticlesCount();
@@ -23,15 +23,15 @@ export default async function Index({ params }: { params: { page: number } }) {
   const [articles, count] = await Promise.all([articlesData, countData]);
 
   return (
-    <>
-      <ul>
+    <div className="m-auto w-96">
+      <ul className="flex flex-col gap-3">
         {articles.map((article) => (
-          <li key={article.slug}>
-            <Link href={`/${article.slug}`}>{article.title}</Link>
-          </li>
+          <ArticleCard key={article.slug} article={article} />
         ))}
       </ul>
-      <Pagination totalCount={count} />
-    </>
+      <div className="pt-8 pb-12 text-center">
+        <Pagination totalCount={count} />
+      </div>
+    </div>
   );
 }
