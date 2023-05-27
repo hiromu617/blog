@@ -1,11 +1,17 @@
+import { Pagination } from "@/app/_components/Pagination";
 import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
-import { Pagination } from "./_components/Pagination";
 
 const prisma = new PrismaClient();
 
-const getArticles = async () => {
+const getArticlesCount = async () => {
+  const count = await prisma.article.count();
+  return count;
+};
+
+const getArticles = async (currentPage?: number) => {
   const articles = await prisma.article.findMany({
+    skip: !currentPage ? 0 : (currentPage - 1) * 10,
     take: 10,
     orderBy: {
       createdAt: "desc",
@@ -14,13 +20,8 @@ const getArticles = async () => {
   return articles;
 };
 
-const getArticlesCount = async () => {
-  const count = await prisma.article.count();
-  return count;
-};
-
-export default async function Home() {
-  const articlesData = getArticles();
+export default async function Index({ params }: { params: { page: number } }) {
+  const articlesData = getArticles(params.page);
   const countData = getArticlesCount();
 
   const [articles, count] = await Promise.all([articlesData, countData]);
