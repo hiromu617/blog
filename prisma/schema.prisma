@@ -14,5 +14,5 @@ model Article {
   id          Int    @id @default(autoincrement())
   title       String
   body        String
-  slug        String
+  slug        String  @unique
 }

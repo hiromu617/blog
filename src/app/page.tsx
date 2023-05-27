@@ -1,16 +1,12 @@
-import { Article } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import Link from "next/link";
 
-async function getArticles() {
-  const res = await fetch("http://localhost:3000/api/articles");
+const prisma = new PrismaClient();
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch articles");
-  }
-
-  const data = await res.json();
-
-  return data as Article[];
-}
+const getArticles = async () => {
+  const articles = await prisma.article.findMany();
+  return articles;
+};
 
 export default async function Home() {
   const articles = await getArticles();
@@ -18,7 +14,9 @@ export default async function Home() {
   return (
     <ul>
       {articles.map((article) => (
-        <li key={article.slug}>{article.title}</li>
+        <li key={article.slug}>
+          <Link href={`/${article.slug}`}>{article.title}</Link>
+        </li>
       ))}
     </ul>
   );
