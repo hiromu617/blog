@@ -1,23 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 import { Pagination } from "./_components/Pagination";
-
-const prisma = new PrismaClient();
-
-const getArticles = async () => {
-  const articles = await prisma.article.findMany({
-    take: 10,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  return articles;
-};
-
-const getArticlesCount = async () => {
-  const count = await prisma.article.count();
-  return count;
-};
+import { getArticles } from "@/services/getArticles";
+import { getArticlesCount } from "@/services/getArticleCount";
 
 export default async function Home() {
   const articlesData = getArticles();

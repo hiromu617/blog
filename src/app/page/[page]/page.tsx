@@ -1,23 +1,19 @@
 import { Pagination } from "@/app/_components/Pagination";
-import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
+import { getArticles } from "@/services/getArticles";
+import { getArticlesCount } from "@/services/getArticleCount";
 
-const prisma = new PrismaClient();
+export const generateStaticParams = async () => {
+  const count = await getArticlesCount();
 
-const getArticlesCount = async () => {
-  const count = await prisma.article.count();
-  return count;
-};
+  const range = (start: number, end: number) =>
+    [...Array(end - start + 1)].map((_, i) => start + i);
 
-const getArticles = async (currentPage?: number) => {
-  const articles = await prisma.article.findMany({
-    skip: !currentPage ? 0 : (currentPage - 1) * 10,
-    take: 10,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  return articles;
+  const paths = range(2, Math.ceil(count / 10)).map(
+    (repo) => `/blogs/page/${repo}`
+  );
+
+  return paths;
 };
 
 export default async function Index({ params }: { params: { page: number } }) {

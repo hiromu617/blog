@@ -1,15 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
-
-const prisma = new PrismaClient();
-
-const getArticle = async (slug: string) => {
-  const article = await prisma.article.findUnique({
-    where: { slug },
-  });
-  return article;
-};
-
+import { getArticle } from "@/services/getArticle";
+import { prisma } from "@/libs/prismaClient";
 export const generateStaticParams = async () => {
   const articles = await prisma.article.findMany();
 

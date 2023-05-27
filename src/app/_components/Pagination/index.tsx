@@ -12,7 +12,7 @@ const PER_PAGE = 10;
 
 export const Pagination: React.FC<Props> = ({ totalCount }) => {
   const params = useParams();
-  const currentPage = Number(params?.page) ?? 1;
+  const currentPage = params?.page ? Number(params.page) : 1;
 
   return (
     <div className="btn-group">
