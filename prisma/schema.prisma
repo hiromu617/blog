@@ -13,6 +13,8 @@ datasource db {
 model Article {
   id          Int    @id @default(autoincrement())
   title       String
-  body        String
+  body        String  @db.Text
   slug        String  @unique
+  createdAt   DateTime @default(now())
+  publishedAt DateTime?
 }
