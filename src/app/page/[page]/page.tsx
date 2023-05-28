@@ -10,7 +10,7 @@ export const generateStaticParams = async () => {
     [...Array(end - start + 1)].map((_, i) => start + i);
 
   const paths = range(2, Math.ceil(count / 10)).map(
-    (repo) => `/blogs/page/${repo}`
+    (repo) => `/page/${repo}`
   );
   return paths;
 };
