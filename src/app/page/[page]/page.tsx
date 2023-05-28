@@ -9,9 +9,9 @@ export const generateStaticParams = async () => {
   const range = (start: number, end: number) =>
     [...Array(end - start + 1)].map((_, i) => start + i);
 
-  const paths = range(2, Math.ceil(count / 10)).map(
-    (repo) => `/page/${repo}`
-  );
+  const paths = range(2, Math.ceil(count / 10)).map((num) => ({
+    page: `${num}`, //stringにしなければいけない
+  }));
   return paths;
 };
 
