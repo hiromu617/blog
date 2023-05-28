@@ -1,17 +1,43 @@
 "use client";
 import { createArticle } from "@/services/createArticle";
 import { useRouter } from "next/navigation";
+import { ChangeEvent, useState } from "react";
+import { ArticleBody } from "@/app/_components/ArticleBody";
+import { ArticlesNewForm } from "./_components/NewArticleForm";
 
 export default function ArticlesNew() {
+  const [isShowPreview, setIsShowPreview] = useState(false);
+  const [formData, setFormData] = useState({ slug: "", title: "", body: "" });
+  const [errorMessage, setErrorMessage] = useState<{
+    slug: string | null;
+    title: string | null;
+    body: string | null;
+  }>({
+    slug: null,
+    title: null,
+    body: null,
+  });
   const router = useRouter();
 
-  const handleSubmit = async (formData: FormData) => {
-    const slug = formData.get("slug") as string | null;
-    const title = formData.get("title") as string | null;
-    const body = formData.get("body") as string | null;
-    if (!slug || !title || !body) return;
+  const validateFormData = () => {
+    setErrorMessage({
+      slug: formData.slug.length !== 0 ? null : "slugを入力してください",
+      title: formData.title.length !== 0 ? null : "タイトルを入力してください",
+      body: formData.body.length !== 0 ? null : "本文を入力してください",
+    });
+    if (
+      formData.slug.length !== 0 &&
+      formData.title.length !== 0 &&
+      formData.body.length !== 0
+    )
+      return true;
+    return false;
+  };
 
-    const result = await createArticle({ slug, title, body });
+  const handleSubmit = async () => {
+    const ok = validateFormData();
+    if (!ok) return;
+    const result = await createArticle({ ...formData });
     if (result.ok) {
       alert("記事を作成しました");
       router.push("/");
@@ -20,54 +46,65 @@ export default function ArticlesNew() {
     }
   };
 
-  return (
-    <div className="m-auto w-full md:w-[768px] px-1 py-5">
-      <div className="flex justify-between items-center mb-5">
-        <div className="tabs tabs-boxed inline-block">
-          <button className="tab" type="button">
-            Markdown
-          </button>
-          <button className="tab tab-active" type="button">
-            Preview
+  const onSlugInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, slug: e.target.value });
+    setErrorMessage({
+      ...errorMessage,
+      slug: e.target.value.length === 0 ? "slugを入力してください" : null,
+    });
+  };
+
+  const onTitleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, title: e.target.value });
+    setErrorMessage({
+      ...errorMessage,
+      title: e.target.value.length === 0 ? "タイトルを入力してください" : null,
+    });
+  };
+
+  const onBodyTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData({ ...formData, body: e.target.value });
+    setErrorMessage({
+      ...errorMessage,
+      body: e.target.value.length === 0 ? "本文を入力してください" : null,
+    });
+
+    return (
+      <div className="m-auto w-full md:w-[768px] px-1 py-5">
+        <div className="flex justify-between items-center mb-5">
+          <div className="tabs tabs-boxed inline-block">
+            <button
+              className={`tab ${!isShowPreview && "tab-active"}`}
+              onClick={() => setIsShowPreview(false)}
+              type="button"
+            >
+              Markdown
+            </button>
+            <button
+              className={`tab ${isShowPreview && "tab-active"}`}
+              onClick={() => setIsShowPreview(true)}
+              type="button"
+            >
+              Preview
+            </button>
+          </div>
+          <button type="submit" className="btn btn-primary" form="article-form">
+            公開する
           </button>
         </div>
-        <button type="submit" className="btn btn-primary" form="article-form">
-          公開する
-        </button>
+        {isShowPreview ? (
+          <ArticleBody body={formData.body} />
+        ) : (
+          <ArticlesNewForm
+            formData={formData}
+            errorMessage={errorMessage}
+            handleSubmit={handleSubmit}
+            onBodyTextAreaChange={onBodyTextAreaChange}
+            onSlugInputChange={onSlugInputChange}
+            onTitleInputChange={onTitleInputChange}
+          />
+        )}
       </div>
-      <form
-        className="text-base-content"
-        id="article-form"
-        action={handleSubmit}
-      >
-        <label>
-          <div className="font-bold mb-2 text-lg">slug</div>
-          <input
-            type="text"
-            name="slug"
-            required
-            className="input input-bordered mb-5 invalid:input-error"
-          />
-        </label>
-        <label>
-          <div className="font-bold mb-2 text-lg">タイトル</div>
-          <input
-            type="text"
-            name="title"
-            required
-            placeholder="Title"
-            className="input input-bordered w-full mb-5 invalid:input-error"
-          />
-        </label>
-        <label>
-          <div className="font-bold mb-2 text-lg">本文</div>
-          <textarea
-            name="body"
-            required
-            className="textarea textarea-bordered w-full min-h-[1000px] invalid:textarea-error"
-          ></textarea>
-        </label>
-      </form>
-    </div>
-  );
+    );
+  };
 }
