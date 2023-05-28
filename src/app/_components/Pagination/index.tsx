@@ -20,7 +20,7 @@ export const Pagination: React.FC<Props> = ({ totalCount }) => {
         <Link
           href={number === 1 ? "/" : `/page/${number}`}
           key={index}
-          className={`btn ${currentPage !== number ? "btn-outline" : ""}`}
+          className={`btn ${currentPage !== number ? "btn-active" : ""}`}
           aria-current={currentPage === number ? "page" : undefined}
         >
           {number}

@@ -9,7 +9,7 @@ type Props = {
 
 export const ArticleCard: FC<Props> = ({ article }) => {
   return (
-    <li key={article.slug} className="card w-full bg-base-100 shadow-xl">
+    <li key={article.slug} className="card w-full bg-base-100 shadow-xl grid-cols-1">
       <div className="card-body ">
         <Link href={`/${article.slug}`} className="card-title link">
           {article.title}
