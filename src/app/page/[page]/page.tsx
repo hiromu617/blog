@@ -12,7 +12,6 @@ export const generateStaticParams = async () => {
   const paths = range(2, Math.ceil(count / 10)).map(
     (repo) => `/blogs/page/${repo}`
   );
-
   return paths;
 };
 
